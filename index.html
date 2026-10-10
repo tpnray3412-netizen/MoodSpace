@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodSpace - Emotional Healing Diary</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #134e4e 0%, #76b852 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .card-3d {
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.320, 1), box-shadow 0.5s ease;
+            transform-style: preserve-3d;
+        }
+        .card-3d:hover {
+            transform: translateY(-10px) rotateX(10deg) rotateY(-10deg);
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.25); opacity: 1; }
+        }
+        .breathing-circle {
+            animation: breathe 6s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="relative selection:bg-teal-300 selection:text-teal-900">
+
+    <!-- Hero / Meadow Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative">
+        <div class="glass p-8 rounded-3xl max-w-2xl w-full mx-auto transform hover:scale-[1.01] transition duration-300">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-teal-200 to-emerald-300 bg-clip-text text-transparent">
+                MoodSpace 🌿
+            </h1>
+            <p class="text-teal-100 text-lg mb-8 font-light">
+                พื้นที่ปลอดภัยสำหรับฮีลใจ บันทึกเรื่องราวและความรู้สึกในแต่ละวัน ท่ามกลางธรรมชาติอันสงบเงียบ
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#healing-cards" class="px-6 py-3 rounded-full bg-white/20 hover:bg-white/30 transition border border-white/30 font-medium shadow-lg">
+                    เริ่มสำรวจความรู้สึก ✨
+                </a>
+                <button onclick="openCalendarModal()" class="px-6 py-3 rounded-full bg-emerald-600/60 hover:bg-emerald-600/80 transition border border-emerald-400/40 font-medium shadow-lg">
+                    📅 เปิดดูปฏิทินไดอารี่
+                </button>
+            </div>
+        </div>
+        <div class="absolute bottom-10 animate-bounce text-sm text-white/70">
+            ↓ เลื่อนลงเพื่อสัมผัสสายฝนและการเติบโต
+        </div>
+    </section>
+
+    <!-- Rain & Storytelling Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center px-4 py-20">
+        <div class="max-w-4xl text-center mb-12">
+            <h2 class="text-3xl font-semibold mb-4 text-emerald-200">สายฝนชำระล้างความเหนื่อยล้า 🌧️</h2>
+            <p class="text-white/80 font-light">ทุกหยดฝนที่ตกลงมา คือการรดน้ำให้ต้นไม้แห่งความเติบโตในใจคุณเบ่งบานอีกครั้ง</p>
+        </div>
+    </section>
+
+    <!-- Emotion Cards / Growth Section -->
+    <section id="healing-cards" class="min-h-screen flex flex-col items-center justify-center px-4 py-20">
+        <h2 class="text-3xl font-bold mb-12 text-center">เลือกความรู้สึกของคุณวันนี้</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl w-full">
+            
+            <div onclick="openDiaryModal('มีความสุขและอบอุ่นใจ ☀️', 'from-yellow-400 to-amber-500')" 
+                 class="card-3d glass p-8 rounded-3xl cursor-pointer hover:shadow-[0_0_30px_rgba(250,204,21,0.6)] flex flex-col items-center text-center">
+                <div class="text-5xl mb-4">☀️</div>
+                <h3 class="text-xl font-semibold mb-2">อบอุ่น & มีความสุข</h3>
+                <p class="text-sm text-white/70 font-light">บันทึกช่วงเวลาดีๆ รอยยิ้ม หรือพลังงานบวกในวันนี้</p>
+            </div>
+
+            <div onclick="openDiaryModal('สงบและผ่อนคลาย 🍃', 'from-teal-400 to-emerald-500')" 
+                 class="card-3d glass p-8 rounded-3xl cursor-pointer hover:shadow-[0_0_30px_rgba(45,212,191,0.6)] flex flex-col items-center text-center">
+                <div class="text-5xl mb-4">🍃</div>
+                <h3 class="text-xl font-semibold mb-2">สงบ & ผ่อนคลาย</h3>
+                <p class="text-sm text-white/70 font-light">บันทึกความรู้สึกนิ่งสงบ การได้พักผ่อนอย่างแท้จริง</p>
+            </div>
+
+            <div onclick="openDiaryModal('กำลังฮีลใจและเติบโต 💧', 'from-blue-400 to-indigo-500')" 
+                 class="card-3d glass p-8 rounded-3xl cursor-pointer hover:shadow-[0_0_30px_rgba(96,165,250,0.6)] flex flex-col items-center text-center">
+                <div class="text-5xl mb-4">💧</div>
+                <h3 class="text-xl font-semibold mb-2">โอบกอดตัวเอง</h3>
+                <p class="text-sm text-white/70 font-light">ระบายความเหนื่อยล้า ให้สายน้ำช่วยชำระล้างใจ</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Diary Modal -->
+    <div id="diaryModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="glass p-8 rounded-3xl max-w-lg w-full relative border border-white/30 shadow-2xl">
+            <button onclick="closeDiaryModal()" class="absolute top-4 right-4 text-white/70 hover:text-white text-xl font-bold">✕</button>
+            
+            <div class="flex flex-col items-center mb-6">
+                <div class="w-20 h-20 rounded-full bg-teal-300/30 breathing-circle flex items-center justify-center mb-4 border border-teal-200/50">
+                    <span class="text-xs text-teal-100 font-medium">หายใจเข้า-ออก</span>
+                </div>
+                <h3 id="modalTitle" class="text-2xl font-bold mb-1 text-center">บันทึกความรู้สึก</h3>
+                <p id="currentDateDisplay" class="text-sm text-teal-200 font-light"></p>
+            </div>
+
+            <textarea id="diaryInput" rows="5" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-teal-300 mb-6 resize-none" placeholder="เขียนความรู้สึกหรือเรื่องราวในวันนี้ลงที่นี่..."></textarea>
+
+            <div class="flex justify-end gap-3">
+                <button onclick="closeDiaryModal()" class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">ยกเลิก</button>
+                <button onclick="saveDiary()" class="px-6 py-2 rounded-xl bg-teal-500 hover:bg-teal-600 transition font-medium shadow-lg">บันทึกความรู้สึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar / History Modal -->
+    <div id="calendarModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="glass p-8 rounded-3xl max-w-xl w-full relative border border-white/30 shadow-2xl max-h-[85vh] overflow-y-auto">
+            <button onclick="closeCalendarModal()" class="absolute top-4 right-4 text-white/70 hover:text-white text-xl font-bold">✕</button>
+            
+            <h3 class="text-2xl font-bold mb-6 text-center">📅 ปฏิทินไดอารี่ย้อนหลัง</h3>
+            
+            <div class="mb-6 flex gap-3">
+                <input type="date" id="calendarPicker" onchange="loadDiaryByDate()" class="p-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-teal-300 w-full">
+            </div>
+
+            <div id="calendarContent" class="p-5 rounded-2xl bg-white/10 border border-white/20 min-h-[120px] mb-6 text-white/90">
+                <p class="text-white/50 text-center">เลือกวันที่ต้องการดูบันทึกไดอารี่ของคุณ</p>
+            </div>
+
+            <div class="flex justify-end">
+                <button onclick="closeCalendarModal()" class="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let selectedMood = '';
+        let activeDateString = '';
+
+        function getTodayString() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function openDiaryModal(moodText) {
+            selectedMood = moodText;
+            activeDateString = getTodayString();
+            
+            document.getElementById('modalTitle').innerText = moodText;
+            document.getElementById('currentDateDisplay').innerText = `วันที่: ${activeDateString}`;
+            
+            const savedData = localStorage.getItem(`diary_${activeDateString}`);
+            document.getElementById('diaryInput').value = savedData ? JSON.parse(savedData).text : '';
+            
+            document.getElementById('diaryModal').classList.remove('hidden');
+            document.getElementById('diaryModal').classList.add('flex');
+        }
+
+        function closeDiaryModal() {
+            document.getElementById('diaryModal').classList.remove('flex');
+            document.getElementById('diaryModal').classList.add('hidden');
+        }
+
+        function saveDiary() {
+            const text = document.getElementById('diaryInput').value;
+            if (!text.trim()) {
+                alert('กรุณากรอกข้อความบันทึกก่อนกดบันทึกครับ');
+                return;
+            }
+
+            const diaryData = {
+                mood: selectedMood,
+                text: text,
+                timestamp: new Date().toLocaleString()
+            };
+
+            localStorage.setItem(`diary_${activeDateString}`, JSON.stringify(diaryData));
+            alert('บันทึกความรู้สึกเรียบร้อยแล้วครับ! 🌿');
+            closeDiaryModal();
+        }
+
+        function openCalendarModal() {
+            document.getElementById('calendarPicker').value = getTodayString();
+            loadDiaryByDate();
+            document.getElementById('calendarModal').classList.remove('hidden');
+            document.getElementById('calendarModal').classList.add('flex');
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').classList.remove('flex');
+            document.getElementById('calendarModal').classList.add('hidden');
+        }
+
+        function loadDiaryByDate() {
+            const dateVal = document.getElementById('calendarPicker').value;
+            const contentDiv = document.getElementById('calendarContent');
+            const savedData = localStorage.getItem(`diary_${dateVal}`);
+
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                contentDiv.innerHTML = `
+                    <div class="font-semibold text-teal-300 mb-2">${data.mood} (${dateVal})</div>
+                    <p class="whitespace-pre-wrap">${data.text}</p>
+                    <div class="text-xs text-white/50 mt-4 text-right">บันทึกเมื่อ: ${data.timestamp}</div>
+                `;
+            } else {
+                contentDiv.innerHTML = `<p class="text-white/50 text-center">ยังไม่มีบันทึกไดอารี่ในวันที่ ${dateVal}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
