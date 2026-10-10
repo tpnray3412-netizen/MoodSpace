@@ -1,225 +1,823 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodSpace - Emotional Healing Diary</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Prompt', sans-serif;
-            background: linear-gradient(135deg, #134e4e 0%, #76b852 100%);
-            min-height: 100vh;
-            color: #fff;
-            overflow-x: hidden;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        .card-3d {
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.320, 1), box-shadow 0.5s ease;
-            transform-style: preserve-3d;
-        }
-        .card-3d:hover {
-            transform: translateY(-10px) rotateX(10deg) rotateY(-10deg);
-        }
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.25); opacity: 1; }
-        }
-        .breathing-circle {
-            animation: breathe 6s infinite ease-in-out;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Growth & Healing Meadow - Interactive Mood Journal</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Mali:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      overflow-x: hidden;
+      background-color: #87CEEB;
+      transition: background-color 0.8s ease;
+    }
+
+    .handwritten {
+      font-family: 'Mali', cursive;
+    }
+
+    /* Custom smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Floating animation */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+    @keyframes floatMedium {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-18px) rotate(-3deg); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 15px rgba(255, 230, 150, 0.6)); }
+      50% { filter: drop-shadow(0 0 28px rgba(255, 250, 200, 0.9)); }
+    }
+
+    .animate-float-slow { animation: floatSlow 5s ease-in-out infinite; }
+    .animate-float-medium { animation: floatMedium 4s ease-in-out infinite; }
+    .animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+
+    /* Custom glassmorphism card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Modal Zoom Effect */
+    .modal-enter {
+      opacity: 0;
+      transform: scale(0.7) translateY(40px);
+    }
+    .modal-enter-active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .modal-exit {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .modal-exit-active {
+      opacity: 0;
+      transform: scale(0.8) translateY(30px);
+      transition: all 0.4s ease-in;
+    }
+
+    /* Hide scrollbars for clean story presentation */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.5);
+      border-radius: 4px;
+    }
+  </style>
 </head>
-<body class="relative selection:bg-teal-300 selection:text-teal-900">
+<body class="relative text-slate-800">
 
-    <!-- Hero / Meadow Section -->
-    <section class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative">
-        <div class="glass p-8 rounded-3xl max-w-2xl w-full mx-auto transform hover:scale-[1.01] transition duration-300">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-teal-200 to-emerald-300 bg-clip-text text-transparent">
-                MoodSpace 🌿
-            </h1>
-            <p class="text-teal-100 text-lg mb-8 font-light">
-                พื้นที่ปลอดภัยสำหรับฮีลใจ บันทึกเรื่องราวและความรู้สึกในแต่ละวัน ท่ามกลางธรรมชาติอันสงบเงียบ
-            </p>
-            <div class="flex justify-center gap-4">
-                <a href="#healing-cards" class="px-6 py-3 rounded-full bg-white/20 hover:bg-white/30 transition border border-white/30 font-medium shadow-lg">
-                    เริ่มสำรวจความรู้สึก ✨
-                </a>
-                <button onclick="openCalendarModal()" class="px-6 py-3 rounded-full bg-emerald-600/60 hover:bg-emerald-600/80 transition border border-emerald-400/40 font-medium shadow-lg">
-                    📅 เปิดดูปฏิทินไดอารี่
-                </button>
-            </div>
+  <!-- Fixed Dynamic Sky Backdrop -->
+  <div id="sky-backdrop" class="fixed inset-0 w-full h-full pointer-events-none transition-all duration-1000 z-0 bg-gradient-to-b from-sky-300 via-sky-200 to-emerald-100"></div>
+
+  <!-- Sun Beams Overlay -->
+  <div id="sunlight" class="fixed inset-0 pointer-events-none transition-opacity duration-1000 opacity-80 z-0">
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-amber-200/40 rounded-full blur-3xl animate-pulse-glow"></div>
+    <div class="absolute top-10 right-10 w-72 h-72 bg-yellow-100/30 rounded-full blur-2xl"></div>
+  </div>
+
+  <!-- Dynamic Rain Canvas -->
+  <canvas id="rain-canvas" class="fixed inset-0 pointer-events-none z-10 opacity-0 transition-opacity duration-1000"></canvas>
+
+  <!-- Audio Controls (Visual Only / Web Audio Synth) -->
+  <div class="fixed top-5 right-5 z-40 flex items-center space-x-2 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full shadow-md border border-white/80">
+    <button id="sound-toggle" class="flex items-center space-x-2 text-slate-700 hover:text-emerald-700 transition">
+      <i data-lucide="volume-x" id="sound-icon" class="w-5 h-5"></i>
+      <span id="sound-text" class="text-xs font-medium">เปิดเสียงฝนผ่อนคลาย</span>
+    </button>
+  </div>
+
+  <!-- Navigation / Progress Indicator -->
+  <div class="fixed left-6 top-1/2 -translate-y-1/2 z-30 hidden md:flex flex-col space-y-4">
+    <a href="#scene1" class="nav-dot w-3 h-3 rounded-full bg-white/80 border-2 border-emerald-600 transition-all duration-300 shadow"></a>
+    <a href="#scene2" class="nav-dot w-3 h-3 rounded-full bg-white/40 border-2 border-transparent transition-all duration-300 shadow"></a>
+    <a href="#scene3" class="nav-dot w-3 h-3 rounded-full bg-white/40 border-2 border-transparent transition-all duration-300 shadow"></a>
+  </div>
+
+  <!-- MAIN SCROLL CONTAINER -->
+  <main class="relative z-10">
+
+    <!-- ================= SCENE 1: CLEAR SKY & MEADOW ================= -->
+    <section id="scene1" class="relative min-h-screen w-full flex flex-col items-center justify-between px-6 pt-16 pb-32">
+      
+      <!-- Animated Clouds Header -->
+      <div class="w-full max-w-5xl relative h-32 pointer-events-none">
+        <svg class="absolute left-4 top-2 w-32 h-20 text-white/90 animate-float-slow" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+        </svg>
+        <svg class="absolute right-12 top-6 w-44 h-24 text-white/80 animate-float-medium" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+        </svg>
+      </div>
+
+      <!-- Title Content -->
+      <div class="text-center max-w-2xl mx-auto space-y-4 my-auto relative z-20">
+        <span class="inline-block px-4 py-1.5 bg-white/70 backdrop-blur-md rounded-full text-xs md:text-sm font-semibold tracking-wider text-emerald-800 uppercase shadow-sm">
+          🌱 พื้นที่พักใจ & ฮีลใจ
+        </span>
+        <h1 class="text-4xl md:text-6xl font-bold text-slate-800 tracking-tight leading-tight">
+          การเดินทางของ <br/>
+          <span class="text-emerald-700 handwritten">ท้องฟ้าและฤดูกาลในใจ</span>
+        </h1>
+        <p class="text-slate-700 text-base md:text-lg font-light leading-relaxed">
+          บางวันใจอาจแจ่มใส บางวันอาจมีฝนโปรยปราย...<br/>
+          ค่อยๆ เลื่อนหน้าจอลงด้านล่าง เพื่อปล่อยให้ความรู้สึกได้เดินทางนะ
+        </p>
+      </div>
+
+      <!-- Scroll Down Cue -->
+      <div class="flex flex-col items-center space-y-2 animate-bounce cursor-pointer z-20" onclick="document.getElementById('scene2').scrollIntoView({behavior: 'smooth'})">
+        <span class="text-xs font-medium text-slate-700 tracking-widest uppercase">เลื่อนลงด้านล่าง</span>
+        <div class="w-8 h-12 rounded-full border-2 border-slate-700/60 flex items-start justify-center p-1.5">
+          <div class="w-1.5 h-3 bg-slate-700 rounded-full animate-pulse"></div>
         </div>
-        <div class="absolute bottom-10 animate-bounce text-sm text-white/70">
-            ↓ เลื่อนลงเพื่อสัมผัสสายฝนและการเติบโต
-        </div>
+      </div>
     </section>
 
-    <!-- Rain & Storytelling Section -->
-    <section class="min-h-screen flex flex-col items-center justify-center px-4 py-20">
-        <div class="max-w-4xl text-center mb-12">
-            <h2 class="text-3xl font-semibold mb-4 text-emerald-200">สายฝนชำระล้างความเหนื่อยล้า 🌧️</h2>
-            <p class="text-white/80 font-light">ทุกหยดฝนที่ตกลงมา คือการรดน้ำให้ต้นไม้แห่งความเติบโตในใจคุณเบ่งบานอีกครั้ง</p>
+
+    <!-- ================= SCENE 2: RAINY SCENE ================= -->
+    <section id="scene2" class="relative min-h-screen w-full flex flex-col items-center justify-center px-6 py-20">
+      
+      <!-- Rain Clouds Container -->
+      <div class="max-w-3xl w-full text-center space-y-6 relative z-20">
+        
+        <!-- Dark Cloud Illustration -->
+        <div class="relative w-48 h-28 mx-auto mb-6">
+          <svg class="w-full h-full text-slate-600/90 filter drop-shadow-xl animate-float-slow" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <i data-lucide="cloud-rain" class="w-12 h-12 text-sky-200 animate-pulse"></i>
+          </div>
         </div>
+
+        <div class="glass-card p-8 md:p-10 rounded-3xl max-w-xl mx-auto border border-white/60 shadow-xl">
+          <h2 class="text-2xl md:text-3xl font-semibold text-slate-800 mb-3 handwritten">
+            🌧️ เมื่อสายฝนเริ่มโปรยปราย
+          </h2>
+          <p class="text-slate-700 leading-relaxed text-sm md:text-base">
+            "การเหนื่อยล้า กังวล หรือเศร้า... เปรียบเสมือนฝนตกในใจ<br/>
+            มันไม่ใช่เรื่องแย่เสมอไป เพราะฝนกำลังรดน้ำให้จิตใจเราได้พักผ่อน"
+          </p>
+          <div class="mt-6 inline-flex items-center space-x-2 text-xs font-medium text-slate-600 bg-white/50 px-4 py-2 rounded-full">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+            <span>ปล่อยให้หยดฝนช่วยชะล้างความเครียดออกไป...</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Scroll Prompt to Growth -->
+      <div class="mt-16 text-center animate-pulse z-20 cursor-pointer" onclick="document.getElementById('scene3').scrollIntoView({behavior: 'smooth'})">
+        <span class="text-xs text-slate-700 font-medium">เลื่อนต่อเพื่อรอชมพระอาทิตย์หลังฝนตก ☀️</span>
+        <i data-lucide="chevron-down" class="w-6 h-6 mx-auto mt-1 text-slate-700"></i>
+      </div>
     </section>
 
-    <!-- Emotion Cards / Growth Section -->
-    <section id="healing-cards" class="min-h-screen flex flex-col items-center justify-center px-4 py-20">
-        <h2 class="text-3xl font-bold mb-12 text-center">เลือกความรู้สึกของคุณวันนี้</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl w-full">
-            
-            <div onclick="openDiaryModal('มีความสุขและอบอุ่นใจ ☀️', 'from-yellow-400 to-amber-500')" 
-                 class="card-3d glass p-8 rounded-3xl cursor-pointer hover:shadow-[0_0_30px_rgba(250,204,21,0.6)] flex flex-col items-center text-center">
-                <div class="text-5xl mb-4">☀️</div>
-                <h3 class="text-xl font-semibold mb-2">อบอุ่น & มีความสุข</h3>
-                <p class="text-sm text-white/70 font-light">บันทึกช่วงเวลาดีๆ รอยยิ้ม หรือพลังงานบวกในวันนี้</p>
-            </div>
 
-            <div onclick="openDiaryModal('สงบและผ่อนคลาย 🍃', 'from-teal-400 to-emerald-500')" 
-                 class="card-3d glass p-8 rounded-3xl cursor-pointer hover:shadow-[0_0_30px_rgba(45,212,191,0.6)] flex flex-col items-center text-center">
-                <div class="text-5xl mb-4">🍃</div>
-                <h3 class="text-xl font-semibold mb-2">สงบ & ผ่อนคลาย</h3>
-                <p class="text-sm text-white/70 font-light">บันทึกความรู้สึกนิ่งสงบ การได้พักผ่อนอย่างแท้จริง</p>
-            </div>
+    <!-- ================= SCENE 3: GROWTH & FLOATING CARDS ================= -->
+    <section id="scene3" class="relative min-h-screen w-full flex flex-col justify-between px-6 pt-12 pb-40">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-2xl mx-auto space-y-2 relative z-20">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 handwritten">
+          🌻 ฟื้นฟู & ผลิบาน
+        </h2>
+        <p class="text-slate-700 text-sm md:text-base">
+          หลังฝนซา ต้นไม้และดอกไม้ก็เติบโต... <br/>
+          <b>คลิกเลือก "การ์ดอารมณ์" ที่ลอยอยู่บนท้องฟ้า</b> เพื่อเริ่มบันทึกและดูแลใจตัวเอง
+        </p>
+      </div>
 
-            <div onclick="openDiaryModal('กำลังฮีลใจและเติบโต 💧', 'from-blue-400 to-indigo-500')" 
-                 class="card-3d glass p-8 rounded-3xl cursor-pointer hover:shadow-[0_0_30px_rgba(96,165,250,0.6)] flex flex-col items-center text-center">
-                <div class="text-5xl mb-4">💧</div>
-                <h3 class="text-xl font-semibold mb-2">โอบกอดตัวเอง</h3>
-                <p class="text-sm text-white/70 font-light">ระบายความเหนื่อยล้า ให้สายน้ำช่วยชำระล้างใจ</p>
+      <!-- Floating Emotion Cards Sky Zone -->
+      <div class="relative w-full max-w-5xl mx-auto h-[380px] md:h-[420px] my-6 z-20 flex items-center justify-center">
+        
+        <!-- Emotion Card 1: Tired / เหนื่อยล้า -->
+        <div onclick="openDiary('tired')" 
+             class="absolute left-[5%] top-[10%] md:left-[10%] md:top-[15%] cursor-pointer group animate-float-slow">
+          <div class="glass-card w-36 md:w-44 p-4 rounded-2xl text-center border-2 border-rose-300/80 bg-rose-50/70 shadow-lg hover:scale-105 hover:shadow-2xl transition duration-300">
+            <div class="w-12 h-12 mx-auto bg-rose-200 rounded-full flex items-center justify-center mb-2 group-hover:rotate-12 transition">
+              <span class="text-2xl">😴</span>
             </div>
-
+            <h3 class="font-bold text-rose-800 text-sm md:text-base">เหนื่อยล้า</h3>
+            <p class="text-[11px] text-rose-600 mt-0.5">Tired & Exhausted</p>
+            <span class="inline-block mt-2 text-[10px] bg-rose-200/80 text-rose-800 px-2 py-0.5 rounded-full">กดเพื่อกดพักผ่อน</span>
+          </div>
         </div>
+
+        <!-- Emotion Card 2: Anxious / กังวล -->
+        <div onclick="openDiary('anxious')" 
+             class="absolute left-[28%] top-[55%] md:left-[30%] md:top-[50%] cursor-pointer group animate-float-medium">
+          <div class="glass-card w-36 md:w-44 p-4 rounded-2xl text-center border-2 border-amber-300/80 bg-amber-50/70 shadow-lg hover:scale-105 hover:shadow-2xl transition duration-300">
+            <div class="w-12 h-12 mx-auto bg-amber-200 rounded-full flex items-center justify-center mb-2 group-hover:-rotate-12 transition">
+              <span class="text-2xl">พ</span>
+            </div>
+            <h3 class="font-bold text-amber-800 text-sm md:text-base">สับสน/กังวล</h3>
+            <p class="text-[11px] text-amber-600 mt-0.5">Anxious & Overwhelmed</p>
+            <span class="inline-block mt-2 text-[10px] bg-amber-200/80 text-amber-800 px-2 py-0.5 rounded-full">กดเพื่อเรียบเรียงใจ</span>
+          </div>
+        </div>
+
+        <!-- Emotion Card 3: Sad / เศร้า -->
+        <div onclick="openDiary('sad')" 
+             class="absolute right-[28%] top-[12%] md:right-[32%] md:top-[10%] cursor-pointer group animate-float-slow">
+          <div class="glass-card w-36 md:w-44 p-4 rounded-2xl text-center border-2 border-indigo-300/80 bg-indigo-50/70 shadow-lg hover:scale-105 hover:shadow-2xl transition duration-300">
+            <div class="w-12 h-12 mx-auto bg-indigo-200 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition">
+              <span class="text-2xl">🌧️</span>
+            </div>
+            <h3 class="font-bold text-indigo-800 text-sm md:text-base">เศร้าใจ</h3>
+            <p class="text-[11px] text-indigo-600 mt-0.5">Sad & Heavy</p>
+            <span class="inline-block mt-2 text-[10px] bg-indigo-200/80 text-indigo-800 px-2 py-0.5 rounded-full">กดเพื่อโอบกอดตัวเอง</span>
+          </div>
+        </div>
+
+        <!-- Emotion Card 4: Calm / ผ่อนคลาย -->
+        <div onclick="openDiary('calm')" 
+             class="absolute right-[5%] top-[50%] md:right-[10%] md:top-[45%] cursor-pointer group animate-float-medium">
+          <div class="glass-card w-36 md:w-44 p-4 rounded-2xl text-center border-2 border-emerald-300/80 bg-emerald-50/70 shadow-lg hover:scale-105 hover:shadow-2xl transition duration-300">
+            <div class="w-12 h-12 mx-auto bg-emerald-200 rounded-full flex items-center justify-center mb-2 group-hover:rotate-12 transition">
+              <span class="text-2xl">🍃</span>
+            </div>
+            <h3 class="font-bold text-emerald-800 text-sm md:text-base">สงบ/ผ่อนคลาย</h3>
+            <p class="text-[11px] text-emerald-600 mt-0.5">Calm & Peaceful</p>
+            <span class="inline-block mt-2 text-[10px] bg-emerald-200/80 text-emerald-800 px-2 py-0.5 rounded-full">กดเพื่อบันทึกรอยยิ้ม</span>
+          </div>
+        </div>
+
+      </div>
+
     </section>
 
-    <!-- Diary Modal -->
-    <div id="diaryModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center p-4 z-50">
-        <div class="glass p-8 rounded-3xl max-w-lg w-full relative border border-white/30 shadow-2xl">
-            <button onclick="closeDiaryModal()" class="absolute top-4 right-4 text-white/70 hover:text-white text-xl font-bold">✕</button>
-            
-            <div class="flex flex-col items-center mb-6">
-                <div class="w-20 h-20 rounded-full bg-teal-300/30 breathing-circle flex items-center justify-center mb-4 border border-teal-200/50">
-                    <span class="text-xs text-teal-100 font-medium">หายใจเข้า-ออก</span>
-                </div>
-                <h3 id="modalTitle" class="text-2xl font-bold mb-1 text-center">บันทึกความรู้สึก</h3>
-                <p id="currentDateDisplay" class="text-sm text-teal-200 font-light"></p>
-            </div>
+  </main>
 
-            <textarea id="diaryInput" rows="5" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-teal-300 mb-6 resize-none" placeholder="เขียนความรู้สึกหรือเรื่องราวในวันนี้ลงที่นี่..."></textarea>
 
-            <div class="flex justify-end gap-3">
-                <button onclick="closeDiaryModal()" class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">ยกเลิก</button>
-                <button onclick="saveDiary()" class="px-6 py-2 rounded-xl bg-teal-500 hover:bg-teal-600 transition font-medium shadow-lg">บันทึกความรู้สึก</button>
-            </div>
-        </div>
+  <!-- FIXED LANDSCAPE / GRASS HILLS AT BOTTOM -->
+  <div class="fixed bottom-0 left-0 right-0 h-64 md:h-80 pointer-events-none z-10 overflow-hidden">
+    
+    <!-- Background Hills -->
+    <svg class="absolute bottom-0 w-full h-full text-emerald-300/80 transition-transform duration-700" preserveAspectRatio="none" viewBox="0 0 1440 320">
+      <path fill="currentColor" d="M0,192L60,181.3C120,171,240,149,360,165.3C480,181,600,235,720,229.3C840,224,960,160,1080,144C1200,128,1320,160,1380,176L1440,192L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+    </svg>
+
+    <!-- Foreground Hills -->
+    <svg class="absolute bottom-0 w-full h-56 md:h-64 text-emerald-500/90" preserveAspectRatio="none" viewBox="0 0 1440 320">
+      <path fill="currentColor" d="M0,224L80,208C160,192,320,160,480,181.3C640,203,800,277,960,272C1120,267,1280,181,1360,138.7L1440,96L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+    </svg>
+
+    <!-- Growing Tree (Scene 3 Interactive Growth) -->
+    <div id="growing-tree" class="absolute left-[12%] bottom-6 w-28 md:w-40 transition-all duration-1000 transform scale-0 origin-bottom opacity-0">
+      <svg viewBox="0 0 100 120" class="w-full h-full drop-shadow-md">
+        <!-- Trunk -->
+        <path d="M45,120 Q50,70 42,50 Q40,30 50,20 Q60,30 58,50 Q50,70 55,120 Z" fill="#7c4a21" />
+        <!-- Foliage -->
+        <circle cx="50" cy="35" r="28" fill="#2d6a4f" />
+        <circle cx="35" cy="42" r="20" fill="#40916c" />
+        <circle cx="65" cy="42" r="20" fill="#52b788" />
+        <circle cx="50" cy="22" r="18" fill="#74c69d" />
+        <!-- Red Apples/Flowers on tree -->
+        <circle cx="42" cy="30" r="3" fill="#ff4d6d" />
+        <circle cx="58" cy="38" r="3" fill="#ff4d6d" />
+        <circle cx="35" cy="48" r="3" fill="#ff4d6d" />
+      </svg>
     </div>
 
-    <!-- Calendar / History Modal -->
-    <div id="calendarModal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center p-4 z-50">
-        <div class="glass p-8 rounded-3xl max-w-xl w-full relative border border-white/30 shadow-2xl max-h-[85vh] overflow-y-auto">
-            <button onclick="closeCalendarModal()" class="absolute top-4 right-4 text-white/70 hover:text-white text-xl font-bold">✕</button>
-            
-            <h3 class="text-2xl font-bold mb-6 text-center">📅 ปฏิทินไดอารี่ย้อนหลัง</h3>
-            
-            <div class="mb-6 flex gap-3">
-                <input type="date" id="calendarPicker" onchange="loadDiaryByDate()" class="p-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-teal-300 w-full">
-            </div>
-
-            <div id="calendarContent" class="p-5 rounded-2xl bg-white/10 border border-white/20 min-h-[120px] mb-6 text-white/90">
-                <p class="text-white/50 text-center">เลือกวันที่ต้องการดูบันทึกไดอารี่ของคุณ</p>
-            </div>
-
-            <div class="flex justify-end">
-                <button onclick="closeCalendarModal()" class="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">ปิดหน้าต่าง</button>
-            </div>
-        </div>
+    <!-- Growing Flower 1 -->
+    <div id="growing-flower-1" class="absolute left-[38%] bottom-4 w-12 md:w-16 transition-all duration-1000 delay-300 transform scale-0 origin-bottom opacity-0">
+      <svg viewBox="0 0 60 80" class="w-full h-full">
+        <!-- Stem -->
+        <path d="M30,80 Q28,50 30,30" stroke="#2d6a4f" stroke-width="4" fill="none" />
+        <!-- Leaf -->
+        <path d="M30,55 Q15,45 30,40" fill="#52b788" />
+        <!-- Petals -->
+        <circle cx="30" cy="20" r="10" fill="#ffb703" />
+        <circle cx="20" cy="30" r="10" fill="#ffb703" />
+        <circle cx="40" cy="30" r="10" fill="#ffb703" />
+        <circle cx="30" cy="40" r="10" fill="#ffb703" />
+        <!-- Center -->
+        <circle cx="30" cy="30" r="8" fill="#fb8500" />
+      </svg>
     </div>
 
-    <!-- JavaScript Logic -->
-    <script>
-        let selectedMood = '';
-        let activeDateString = '';
+    <!-- Growing Flower 2 -->
+    <div id="growing-flower-2" class="absolute right-[22%] bottom-5 w-14 md:w-20 transition-all duration-1000 delay-500 transform scale-0 origin-bottom opacity-0">
+      <svg viewBox="0 0 60 80" class="w-full h-full">
+        <!-- Stem -->
+        <path d="M30,80 Q32,50 30,25" stroke="#2d6a4f" stroke-width="4" fill="none" />
+        <!-- Leaf -->
+        <path d="M30,50 Q45,40 30,35" fill="#40916c" />
+        <!-- Petals -->
+        <circle cx="30" cy="15" r="9" fill="#ffacc7" />
+        <circle cx="18" cy="25" r="9" fill="#ffacc7" />
+        <circle cx="42" cy="25" r="9" fill="#ffacc7" />
+        <circle cx="22" cy="37" r="9" fill="#ffacc7" />
+        <circle cx="38" cy="37" r="9" fill="#ffacc7" />
+        <!-- Center -->
+        <circle cx="30" cy="27" r="7" fill="#fff" />
+      </svg>
+    </div>
 
-        function getTodayString() {
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            return `${yyyy}-${mm}-${dd}`;
+  </div>
+
+
+  <!-- ================= DIARY & STRESS-RELIEF MODAL ================= -->
+  <div id="diary-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md hidden transition-all duration-500">
+    
+    <div id="modal-card" class="bg-white/90 backdrop-blur-xl w-full max-w-2xl rounded-3xl shadow-2xl border border-white/80 overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Header -->
+      <div id="modal-header" class="px-6 py-5 flex items-center justify-between border-b border-slate-100">
+        <div class="flex items-center space-x-3">
+          <span id="modal-emoji" class="text-3xl p-2 bg-slate-100 rounded-2xl">🌿</span>
+          <div>
+            <h3 id="modal-title" class="text-xl font-bold text-slate-800">บันทึกความรู้สึก</h3>
+            <p id="modal-subtitle" class="text-xs text-slate-500">พื้นที่ปลอดภัยสำหรับปลดปล่อยความคิด</p>
+          </div>
+        </div>
+        <button onclick="closeDiary()" class="p-2 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-1">
+        
+        <!-- Interactive Stress Relief Canvas Section -->
+        <div class="bg-gradient-to-br from-slate-50 to-emerald-50/50 p-4 rounded-2xl border border-slate-200/60">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-emerald-800 flex items-center gap-1">
+              <i data-lucide="hand" class="w-4 h-4"></i>
+              พื้นที่คลายเครียด (Interactive Soothing Shape)
+            </span>
+            <span class="text-[10px] text-slate-500">แตะ/ลาก บนวงกลมเพื่อผ่อนคลาย</span>
+          </div>
+          
+          <!-- Relaxing Shape Canvas -->
+          <div class="relative w-full h-44 bg-white rounded-xl shadow-inner overflow-hidden flex items-center justify-center cursor-crosshair">
+            <canvas id="soothing-canvas" class="w-full h-full"></canvas>
+            <div id="canvas-instruction" class="absolute pointer-events-none text-center text-xs text-slate-400 font-light">
+              ✨ ลากเมาส์ หรือ สัมผัสเพื่อผ่อนคลายความเครียด ✨
+            </div>
+          </div>
+        </div>
+
+        <!-- Journal Textarea -->
+        <div class="space-y-2">
+          <label id="journal-prompt" class="block text-sm font-medium text-slate-700 handwritten">
+            เรื่องราวที่คุณอยากเขียนระบายในวันนี้...
+          </label>
+          <textarea id="journal-input" rows="4" 
+            placeholder="เขียนอะไรก็ได้ตามใจคุณ... ไม่มีผิดไม่มีถูก ความรู้สึกของคุณสำคัญเสมอ" 
+            class="w-full p-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-emerald-400 focus:border-transparent outline-none text-slate-700 text-sm resize-none bg-white/80 shadow-inner"></textarea>
+        </div>
+
+        <!-- Notification Toast inside modal -->
+        <div id="save-toast" class="hidden p-3 bg-emerald-100 text-emerald-800 text-xs rounded-xl flex items-center space-x-2">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+          <span>บันทึกความรู้สึกของคุณเรียบร้อยแล้ว ❤️</span>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between">
+        <button onclick="downloadJournal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800 border border-slate-300 rounded-xl hover:bg-white transition flex items-center gap-1.5">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          ดาวน์โหลดบันทึก (.txt)
+        </button>
+        <div class="flex space-x-2">
+          <button onclick="closeDiary()" class="px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700 rounded-xl transition">
+            ปิด
+          </button>
+          <button onclick="saveJournal()" class="px-5 py-2 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition flex items-center gap-1.5">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            บันทึกไว้ในเครื่อง
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    /* ================= 1. RAIN CANVAS ANIMATION ================= */
+    const rainCanvas = document.getElementById('rain-canvas');
+    const rainCtx = rainCanvas.getContext('2d');
+    let drops = [];
+
+    function resizeRainCanvas() {
+      rainCanvas.width = window.innerWidth;
+      rainCanvas.height = window.innerHeight;
+    }
+    resizeRainCanvas();
+    window.addEventListener('resize', resizeRainCanvas);
+
+    class Drop {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * rainCanvas.width;
+        this.y = Math.random() * -rainCanvas.height;
+        this.length = Math.random() * 20 + 10;
+        this.speed = Math.random() * 8 + 6;
+        this.opacity = Math.random() * 0.4 + 0.1;
+      }
+      update() {
+        this.y += this.speed;
+        if (this.y > rainCanvas.height) {
+          this.reset();
+        }
+      }
+      draw() {
+        rainCtx.beginPath();
+        rainCtx.moveTo(this.x, this.y);
+        rainCtx.lineTo(this.x, this.y + this.length);
+        rainCtx.strokeStyle = `rgba(180, 220, 255, ${this.opacity})`;
+        rainCtx.lineWidth = 1.5;
+        rainCtx.lineCap = 'round';
+        rainCtx.stroke();
+      }
+    }
+
+    for (let i = 0; i < 90; i++) {
+      drops.push(new Drop());
+    }
+
+    function animateRain() {
+      rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+      drops.forEach(drop => {
+        drop.update();
+        drop.draw();
+      });
+      requestAnimationFrame(animateRain);
+    }
+    animateRain();
+
+
+    /* ================= 2. SCROLL TRIGGER STORYLINE ================= */
+    const skyBackdrop = document.getElementById('sky-backdrop');
+    const sunlight = document.getElementById('sunlight');
+    const tree = document.getElementById('growing-tree');
+    const flower1 = document.getElementById('growing-flower-1');
+    const flower2 = document.getElementById('growing-flower-2');
+    const navDots = document.querySelectorAll('.nav-dot');
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const totalHeight = document.body.scrollHeight;
+
+      // Determine active section based on scroll position
+      if (scrollY < windowHeight * 0.6) {
+        // --- SCENE 1: CLEAR SKY ---
+        skyBackdrop.className = "fixed inset-0 w-full h-full pointer-events-none transition-all duration-1000 z-0 bg-gradient-to-b from-sky-300 via-sky-200 to-emerald-100";
+        rainCanvas.style.opacity = '0';
+        sunlight.style.opacity = '0.8';
+
+        // Tree/Flower scale down
+        tree.style.transform = 'scale(0)';
+        tree.style.opacity = '0';
+        flower1.style.transform = 'scale(0)';
+        flower1.style.opacity = '0';
+        flower2.style.transform = 'scale(0)';
+        flower2.style.opacity = '0';
+
+        updateNavDots(0);
+
+      } else if (scrollY >= windowHeight * 0.6 && scrollY < windowHeight * 1.5) {
+        // --- SCENE 2: RAINY DAY ---
+        skyBackdrop.className = "fixed inset-0 w-full h-full pointer-events-none transition-all duration-1000 z-0 bg-gradient-to-b from-slate-600 via-slate-500 to-emerald-900/30";
+        rainCanvas.style.opacity = '1';
+        sunlight.style.opacity = '0.1';
+
+        // Keep plant growth waiting
+        tree.style.transform = 'scale(0.2)';
+        tree.style.opacity = '0.3';
+        flower1.style.transform = 'scale(0)';
+        flower1.style.opacity = '0';
+        flower2.style.transform = 'scale(0)';
+        flower2.style.opacity = '0';
+
+        updateNavDots(1);
+
+      } else {
+        // --- SCENE 3: GROWTH & HEALING ---
+        skyBackdrop.className = "fixed inset-0 w-full h-full pointer-events-none transition-all duration-1000 z-0 bg-gradient-to-b from-amber-200/90 via-sky-200 to-emerald-200";
+        rainCanvas.style.opacity = '0.1';
+        sunlight.style.opacity = '1';
+
+        // Bloom Tree & Flowers
+        tree.style.transform = 'scale(1)';
+        tree.style.opacity = '1';
+        flower1.style.transform = 'scale(1)';
+        flower1.style.opacity = '1';
+        flower2.style.transform = 'scale(1)';
+        flower2.style.opacity = '1';
+
+        updateNavDots(2);
+      }
+    });
+
+    function updateNavDots(activeIndex) {
+      navDots.forEach((dot, index) => {
+        if (index === activeIndex) {
+          dot.classList.add('bg-white/90', 'border-emerald-600');
+          dot.classList.remove('bg-white/40', 'border-transparent');
+        } else {
+          dot.classList.remove('bg-white/90', 'border-emerald-600');
+          dot.classList.add('bg-white/40', 'border-transparent');
+        }
+      });
+    }
+
+
+    /* ================= 3. SOOTHING INTERACTIVE CANVAS (STRESS RELIEF) ================= */
+    const soothingCanvas = document.getElementById('soothing-canvas');
+    const sCtx = soothingCanvas.getContext('2d');
+    let particles = [];
+    let mouse = { x: null, y: null, active: false };
+
+    function resizeSoothingCanvas() {
+      if (soothingCanvas.parentElement) {
+        soothingCanvas.width = soothingCanvas.parentElement.clientWidth;
+        soothingCanvas.height = soothingCanvas.parentElement.clientHeight;
+      }
+    }
+
+    class SoothingParticle {
+      constructor(x, y, color) {
+        this.x = x || Math.random() * soothingCanvas.width;
+        this.y = y || Math.random() * soothingCanvas.height;
+        this.size = Math.random() * 18 + 8;
+        this.baseSize = this.size;
+        this.color = color || '#a7f3d0';
+        this.vx = (Math.random() - 0.5) * 1.5;
+        this.vy = (Math.random() - 0.5) * 1.5;
+        this.alpha = 0.7;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > soothingCanvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > soothingCanvas.height) this.vy *= -1;
+
+        // Interaction with mouse pointer
+        if (mouse.x && mouse.y) {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 70) {
+            this.size = Math.min(this.baseSize * 2, 35);
+            this.alpha = 1;
+          } else {
+            this.size = Math.max(this.baseSize, this.size - 0.5);
+            this.alpha = 0.6;
+          }
+        }
+      }
+
+      draw() {
+        sCtx.save();
+        sCtx.globalAlpha = this.alpha;
+        sCtx.beginPath();
+        sCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        sCtx.fillStyle = this.color;
+        sCtx.shadowBlur = 15;
+        sCtx.shadowColor = this.color;
+        sCtx.fill();
+        sCtx.restore();
+      }
+    }
+
+    function initSoothingParticles(palette) {
+      particles = [];
+      const colors = palette || ['#fecdd3', '#fef08a', '#a7f3d0', '#bae6fd'];
+      for (let i = 0; i < 22; i++) {
+        let color = colors[Math.floor(Math.random() * colors.length)];
+        particles.push(new SoothingParticle(null, null, color));
+      }
+    }
+
+    function animateSoothingCanvas() {
+      sCtx.clearRect(0, 0, soothingCanvas.width, soothingCanvas.height);
+      
+      // Draw smooth breathing shape in background
+      let time = Date.now() * 0.002;
+      let cx = soothingCanvas.width / 2;
+      let cy = soothingCanvas.height / 2;
+      let radius = 35 + Math.sin(time) * 12;
+
+      sCtx.beginPath();
+      sCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+      sCtx.fillStyle = 'rgba(167, 243, 208, 0.25)';
+      sCtx.fill();
+
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      requestAnimationFrame(animateSoothingCanvas);
+    }
+
+    // Pointer events on stress canvas
+    soothingCanvas.addEventListener('mousemove', (e) => {
+      const rect = soothingCanvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      document.getElementById('canvas-instruction').style.opacity = '0';
+    });
+    soothingCanvas.addEventListener('mouseleave', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+    soothingCanvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        const rect = soothingCanvas.getBoundingClientRect();
+        mouse.x = e.touches[0].clientX - rect.left;
+        mouse.y = e.touches[0].clientY - rect.top;
+        document.getElementById('canvas-instruction').style.opacity = '0';
+      }
+    });
+
+
+    /* ================= 4. EMOTION DIARY MODAL DATA & CONTROLS ================= */
+    let currentEmotionKey = 'calm';
+
+    const emotionConfig = {
+      tired: {
+        title: "โหมดพักผ่อนเมื่อเหนื่อยล้า (Tired)",
+        subtitle: "การเหนื่อยไม่ได้แปลว่าไร้ความสามารถ แต่แปลว่าร่างกายบอกให้พัก",
+        emoji: "😴",
+        prompt: "วันนี้มีเรื่องอะไรที่สูบพลังของคุณไปบ้าง? ลองเขียนและอนุญาตให้ตัวเองพักผ่อนนะ:",
+        palette: ['#fecdd3', '#fda4af', '#ffe4e6', '#f43f5e']
+      },
+      anxious: {
+        title: "โหมดเรียบเรียงใจเมื่อกังวล (Anxious)",
+        subtitle: "สูดหายใจเข้าลึกๆ สิ่งที่คุณกังวลอาจยังมาไม่ถึง",
+        emoji: "🌀",
+        prompt: "ลองเขียนสิ่งที่ทำให้คุณกังวลออกออกมาทีละเรื่อง เพื่อปลดมันออกจากหัว:",
+        palette: ['#fef08a', '#fde047', '#fef9c3', '#eab308']
+      },
+      sad: {
+        title: "โหมดโอบกอดตัวเองเมื่อเศร้า (Sad)",
+        subtitle: "น้ำตาไม่ได้ทำให้อ่อนแอ แต่ช่วยชะล้างใจให้เบาลง",
+        emoji: "🌧️",
+        prompt: "โอบกอดความรู้สึกตัวเอง... อยากบอกหรือระบายอะไรกับตัวเองในตอนนี้ไหม?",
+        palette: ['#c7d2fe', '#a5b4fc', '#e0e7ff', '#6366f1']
+      },
+      calm: {
+        title: "โหมดบันทึกความสงบสุข (Calm & Peaceful)",
+        subtitle: "เก็บบันทึกช่วงเวลาดีๆ ไว้เป็นพลังงานบวกให้วันต่อๆ ไป",
+        emoji: "🍃",
+        prompt: "สิ่งเล็กๆ ที่ทำให้คุณยิ้มได้หรือรู้สึกผ่อนคลายในวันนี้คืออะไร?",
+        palette: ['#a7f3d0', '#6ee7b7', '#d1fae5', '#10b981']
+      }
+    };
+
+    function openDiary(emotionKey) {
+      currentEmotionKey = emotionKey;
+      const config = emotionConfig[emotionKey] || emotionConfig.calm;
+
+      document.getElementById('modal-title').innerText = config.title;
+      document.getElementById('modal-subtitle').innerText = config.subtitle;
+      document.getElementById('modal-emoji').innerText = config.emoji;
+      document.getElementById('journal-prompt').innerText = config.prompt;
+
+      // Load saved note if exists
+      const savedNote = localStorage.getItem(`mood_journal_${emotionKey}`);
+      document.getElementById('journal-input').value = savedNote || '';
+
+      const modal = document.getElementById('diary-modal');
+      const modalCard = document.getElementById('modal-card');
+
+      modal.classList.remove('hidden');
+      modalCard.classList.add('modal-enter-active');
+
+      setTimeout(() => {
+        resizeSoothingCanvas();
+        initSoothingParticles(config.palette);
+        animateSoothingCanvas();
+      }, 100);
+    }
+
+    function closeDiary() {
+      const modal = document.getElementById('diary-modal');
+      modal.classList.add('hidden');
+      document.getElementById('save-toast').classList.add('hidden');
+    }
+
+    function saveJournal() {
+      const text = document.getElementById('journal-input').value;
+      localStorage.setItem(`mood_journal_${currentEmotionKey}`, text);
+
+      const toast = document.getElementById('save-toast');
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    function downloadJournal() {
+      const text = document.getElementById('journal-input').value;
+      const config = emotionConfig[currentEmotionKey];
+      const content = `=== บันทึกความรู้สึก: ${config.title} ===\nวันที่: ${new Date().toLocaleString()}\n\n${text}\n\n--- Growth & Healing Journal ---`;
+      
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Mood_Journal_${currentEmotionKey}_${Date.now()}.txt`;
+      link.click();
+    }
+
+
+    /* ================= 5. RELAXING RAIN SOUND SYNTH (WEB AUDIO API) ================= */
+    let audioCtx = null;
+    let isPlayingSound = false;
+    let rainNoiseNode = null;
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      const soundIcon = document.getElementById('sound-icon');
+      const soundText = document.getElementById('sound-text');
+
+      if (!isPlayingSound) {
+        // Start Web Audio Synthesized Rain Noise
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
 
-        function openDiaryModal(moodText) {
-            selectedMood = moodText;
-            activeDateString = getTodayString();
-            
-            document.getElementById('modalTitle').innerText = moodText;
-            document.getElementById('currentDateDisplay').innerText = `วันที่: ${activeDateString}`;
-            
-            const savedData = localStorage.getItem(`diary_${activeDateString}`);
-            document.getElementById('diaryInput').value = savedData ? JSON.parse(savedData).text : '';
-            
-            document.getElementById('diaryModal').classList.remove('hidden');
-            document.getElementById('diaryModal').classList.add('flex');
+        const bufferSize = audioCtx.sampleRate * 2;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
         }
 
-        function closeDiaryModal() {
-            document.getElementById('diaryModal').classList.remove('flex');
-            document.getElementById('diaryModal').classList.add('hidden');
+        rainNoiseNode = audioCtx.createBufferSource();
+        rainNoiseNode.buffer = noiseBuffer;
+        rainNoiseNode.loop = true;
+
+        // Lowpass filter to make white noise sound like gentle rain
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 800;
+
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = 0.15;
+
+        rainNoiseNode.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        rainNoiseNode.start();
+        isPlayingSound = true;
+
+        soundIcon.setAttribute('data-lucide', 'volume-2');
+        soundText.innerText = 'ปิดเสียงฝนผ่อนคลาย';
+        lucide.createIcons();
+
+      } else {
+        if (rainNoiseNode) {
+          rainNoiseNode.stop();
         }
+        isPlayingSound = false;
 
-        function saveDiary() {
-            const text = document.getElementById('diaryInput').value;
-            if (!text.trim()) {
-                alert('กรุณากรอกข้อความบันทึกก่อนกดบันทึกครับ');
-                return;
-            }
-
-            const diaryData = {
-                mood: selectedMood,
-                text: text,
-                timestamp: new Date().toLocaleString()
-            };
-
-            localStorage.setItem(`diary_${activeDateString}`, JSON.stringify(diaryData));
-            alert('บันทึกความรู้สึกเรียบร้อยแล้วครับ! 🌿');
-            closeDiaryModal();
-        }
-
-        function openCalendarModal() {
-            document.getElementById('calendarPicker').value = getTodayString();
-            loadDiaryByDate();
-            document.getElementById('calendarModal').classList.remove('hidden');
-            document.getElementById('calendarModal').classList.add('flex');
-        }
-
-        function closeCalendarModal() {
-            document.getElementById('calendarModal').classList.remove('flex');
-            document.getElementById('calendarModal').classList.add('hidden');
-        }
-
-        function loadDiaryByDate() {
-            const dateVal = document.getElementById('calendarPicker').value;
-            const contentDiv = document.getElementById('calendarContent');
-            const savedData = localStorage.getItem(`diary_${dateVal}`);
-
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                contentDiv.innerHTML = `
-                    <div class="font-semibold text-teal-300 mb-2">${data.mood} (${dateVal})</div>
-                    <p class="whitespace-pre-wrap">${data.text}</p>
-                    <div class="text-xs text-white/50 mt-4 text-right">บันทึกเมื่อ: ${data.timestamp}</div>
-                `;
-            } else {
-                contentDiv.innerHTML = `<p class="text-white/50 text-center">ยังไม่มีบันทึกไดอารี่ในวันที่ ${dateVal}</p>`;
-            }
-        }
-    </script>
+        soundIcon.setAttribute('data-lucide', 'volume-x');
+        soundText.innerText = 'เปิดเสียงฝนผ่อนคลาย';
+        lucide.createIcons();
+      }
+    });
+  </script>
 </body>
 </html>
